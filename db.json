@@ -1,0 +1,17 @@
+{
+  "users": [
+    {
+      "id": "e8ab",
+      "fullName": "Ade wale",
+      "email": "ade@gmail.com",
+      "staffStudentNumber": "22222",
+      "role": "man",
+      "institution": "uj",
+      "department": "uc",
+      "researchInterests": "fff",
+      "password": "ccc",
+      "confirmPassword": "ccc",
+      "agreeTerms": true
+    }
+  ]
+}
