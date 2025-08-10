@@ -77,7 +77,7 @@ const Register: React.FC = () => {
           agreeTerms: false,
         });
 
-        navigate("/users"); // redirect to profile page
+        navigate("/profile"); // redirect to profile page
       } else {
         toast({
           title: "Error",
