@@ -1,208 +1,123 @@
-import React, { useState } from "react";
-import { toast } from "@/components/ui/use-toast";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Navigation } from "@/components/ui/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const Register: React.FC = () => {
+const Register = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    fullName: "",
+    name: "",
     email: "",
-    staffStudentNumber: "",
-    role: "",
-    institution: "",
-    department: "",
-    researchInterests: "",
     password: "",
     confirmPassword: "",
-    agreeTerms: false,
   });
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const target = e.target as HTMLInputElement;
-    const { name, value, type } = target;
-    const checked = target.checked;
+  const [error, setError] = useState("");
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
 
-    if (formData.password !== formData.confirmPassword) {
-      toast({
-        title: "Error",
-        description: "Passwords do not match.",
-        variant: "destructive",
-      });
+    // Simple validation
+    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+      setError("Please fill in all fields.");
       return;
     }
 
-    try {
-      const response = await fetch("http://localhost:3001/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        toast({
-          title: "Registration Successful!",
-          description:
-            "Welcome to ResearchHub. You can now start exploring research.",
-        });
-
-        localStorage.setItem("userEmail", formData.email);
-
-        setFormData({
-          fullName: "",
-          email: "",
-          staffStudentNumber: "",
-          role: "",
-          institution: "",
-          department: "",
-          researchInterests: "",
-          password: "",
-          confirmPassword: "",
-          agreeTerms: false,
-        });
-
-        navigate("/profile"); // redirect to profile page
-      } else {
-        toast({
-          title: "Error",
-          description: "Registration failed.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Something went wrong.",
-        variant: "destructive",
-      });
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match.");
+      return;
     }
+
+    // Save email locally (optional)
+    localStorage.setItem("userEmail", formData.email);
+
+    // Navigate to Profile page
+    navigate("/profile");
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto mt-8">
-      <div>
-        <Label htmlFor="fullName">Full Name</Label>
-        <Input
-          type="text"
-          name="fullName"
-          value={formData.fullName}
-          onChange={handleChange}
-          required
-        />
-      </div>
+    <div className="min-h-screen bg-background">
+      <Navigation isAuthenticated={false} />
+      
+      <div className="container mx-auto px-4 py-8 flex justify-center">
+        <Card className="w-full max-w-md shadow-elegant">
+          <CardHeader>
+            <CardTitle className="text-2xl text-center">Create an Account</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {error && (
+                <p className="text-red-500 text-sm">{error}</p>
+              )}
 
-      <div>
-        <Label htmlFor="email">Email</Label>
-        <Input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
-      </div>
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  placeholder="Enter your full name"
+                  value={formData.name}
+                  onChange={handleChange}
+                />
+              </div>
 
-      <div>
-        <Label htmlFor="staffStudentNumber">Staff/Student Number</Label>
-        <Input
-          type="text"
-          name="staffStudentNumber"
-          value={formData.staffStudentNumber}
-          onChange={handleChange}
-        />
-      </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email Address</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+              </div>
 
-      <div>
-        <Label htmlFor="role">Role</Label>
-        <Input
-          type="text"
-          name="role"
-          value={formData.role}
-          onChange={handleChange}
-        />
-      </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="Enter your password"
+                  value={formData.password}
+                  onChange={handleChange}
+                />
+              </div>
 
-      <div>
-        <Label htmlFor="institution">Institution</Label>
-        <Input
-          type="text"
-          name="institution"
-          value={formData.institution}
-          onChange={handleChange}
-        />
-      </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  placeholder="Confirm your password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                />
+              </div>
 
-      <div>
-        <Label htmlFor="department">Department</Label>
-        <Input
-          type="text"
-          name="department"
-          value={formData.department}
-          onChange={handleChange}
-        />
+              <Button type="submit" className="w-full">
+                Register
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
       </div>
-
-      <div>
-        <Label htmlFor="researchInterests">Research Interests</Label>
-        <Input
-          type="text"
-          name="researchInterests"
-          value={formData.researchInterests}
-          onChange={handleChange}
-        />
-      </div>
-
-      <div>
-        <Label htmlFor="password">Password</Label>
-        <Input
-          type="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-        />
-      </div>
-
-      <div>
-        <Label htmlFor="confirmPassword">Confirm Password</Label>
-        <Input
-          type="password"
-          name="confirmPassword"
-          value={formData.confirmPassword}
-          onChange={handleChange}
-          required
-        />
-      </div>
-
-      <div className="flex items-center space-x-2">
-        <input
-          type="checkbox"
-          name="agreeTerms"
-          checked={formData.agreeTerms}
-          onChange={handleChange}
-          required
-        />
-        <Label htmlFor="agreeTerms">I agree to the terms and conditions</Label>
-      </div>
-
-      <Button type="submit">Register</Button>
-    </form>
+    </div>
   );
 };
 
